@@ -20,4 +20,4 @@ Finally, to launch the program: <br />
 
 ## How to Use
 
-Draw a scar(s) on the manatee template, give it a bounding box around the scar(s) and hit **Search**. The program then cross references the image with the existing database and returns similar matches.
+The program takes a scar and bounding box as input, and the program cross references the image with the existing database and returns similar matches.  The application also supports multiple bounding box regions, as well as empty bounding boxes, in which the program will not return images that contain scars in that area. Certain scars return better matches with different weights, so we include the option to adjust the weights. 
