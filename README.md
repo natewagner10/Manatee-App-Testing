@@ -6,15 +6,15 @@ Code repository for New College of Florida and Mote Marine Research Laboratory c
 
 ## Setup
 
-Open the terminal or command line and clone the repository: <br />
+1. Open the terminal or command line and clone the repository: <br />
 ```sh
 git clone https://github.com/natewagner10/Manatee-App-Testing.git
 ```
-Then install the requirements: <br />
+2. Then install the requirements: <br />
 ```sh
 pip install -r requirements.txt
 ```
-Finally, to launch the program: <br />
+3. Finally, to launch the program: <br />
 ```sh
 python app.py
 ```
