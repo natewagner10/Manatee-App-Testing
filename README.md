@@ -20,4 +20,4 @@ Finally, to launch the program: <br />
 
 ## How to Use
 
-
+Draw a scar(s) on the manatee template, give it a bounding box around the scar(s) and hit **Search**. The program then cross references the image with the existing database and returns similar matches.
