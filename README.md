@@ -2,8 +2,6 @@
 
 Code repository for New College of Florida and Mote Marine Research Laboratory collaboration.
 
-![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/dash_example.pdf)
-
 ## Setup
 
 Open the terminal or command line and clone the repository: <br />
@@ -17,3 +15,5 @@ Then install the requirements: <br />
 Finally, to launch the program: <br />
 <br />
 `python app.py`
+
+## How to Use
