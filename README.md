@@ -20,6 +20,8 @@ Finally, to launch the program: <br />
 
 ## How to Use
 
+First, enter the path to the images and select **Go**. <br />
+<br />
 The program takes a scar and bounding box as input, and the program cross references the image with the existing database and returns similar matches.  <br />
 <br />
 The application also supports multiple bounding box regions, as well as empty bounding boxes, in which the program will not return images that contain scars in that area. <br />
