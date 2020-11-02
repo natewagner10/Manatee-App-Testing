@@ -9,7 +9,7 @@ Code repository for New College of Florida and Mote Marine Research Laboratory c
 Open the terminal or command line and clone the repository: <br />
 <br />
 ```sh
-`git clone https://github.com/natewagner10/Manatee-App-Testing.git`
+git clone https://github.com/natewagner10/Manatee-App-Testing.git
 ```
 Then install the requirements: <br />
 <br />
@@ -19,7 +19,7 @@ pip install -r requirements.txt
 Finally, to launch the program: <br />
 <br />
 ```sh
-`python app.py`
+python app.py
 ```
 ## How to Use
 
