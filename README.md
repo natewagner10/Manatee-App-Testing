@@ -2,6 +2,8 @@
 
 Code repository for New College of Florida and Mote Marine Research Laboratory collaboration.
 
+![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/dash_example.png)
+
 ## Setup
 
 Open the terminal or command line and clone the repository: <br />
@@ -18,5 +20,4 @@ Finally, to launch the program: <br />
 
 ## How to Use
 
-![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/dash_example.png)
 
