@@ -20,7 +20,7 @@ python app.py
 ```
 ## How to Use
 
-First, enter the path to the images and select **Go**. <br />
+Enter the path to the images and select **Go**. The import status will change if the images are successfully imported. <br />
 <br />
 The program takes a scar and bounding box as input, and then it cross references the image with the existing database and returns similar matches.  <br />
 <br />
