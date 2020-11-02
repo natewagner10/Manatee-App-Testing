@@ -1,4 +1,4 @@
-# Manatee-App
+# Manatee Program
 
 Code repository for New College of Florida and Mote Marine Research Laboratory collaboration.
 
