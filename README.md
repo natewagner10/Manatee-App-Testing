@@ -39,8 +39,8 @@ Weight options: <br />
 * Sum of Scar Pixel Values <br />
 
 ## Contributors
-Rosa Gradilla 
-Nate Wagner
+Rosa Gradilla <br />
+Nate Wagner <br />
 
 
 
