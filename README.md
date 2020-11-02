@@ -20,4 +20,9 @@ Finally, to launch the program: <br />
 
 ## How to Use
 
-The program takes a scar and bounding box as input, and the program cross references the image with the existing database and returns similar matches.  The application also supports multiple bounding box regions, as well as empty bounding boxes, in which the program will not return images that contain scars in that area. Certain scars return better matches with different weights, so we include the option to adjust the weights. 
+The program takes a scar and bounding box as input, and the program cross references the image with the existing database and returns similar matches.  <br />
+<br />
+The application also supports multiple bounding box regions, as well as empty bounding boxes, in which the program will not return images that contain scars in that area. <br />
+<br />
+Certain scars return better matches with different weights, so we include the option to adjust the weights. <br />
+<br />
