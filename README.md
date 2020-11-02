@@ -4,4 +4,4 @@ Code repository for New College of Florida and Mote Marine Research Laboratory c
 
 ## Setup
 
-Clone the repository with `git clone https://github.com/natewagner10/Manatee-App-Testing.git`
+Open the terminal or command line and clone the repository with `git clone https://github.com/natewagner10/Manatee-App-Testing.git`
