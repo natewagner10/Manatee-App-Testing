@@ -8,4 +8,4 @@ Open the terminal or command line and clone the repository with `git clone https
 
 Then install the requirements with `pip install -r requirements.txt`
 
-Finally, run `python app.py` to start finding manatees.
+Finally, to launch the program run `python app.py`.
