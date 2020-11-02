@@ -26,14 +26,14 @@ The application also supports multiple bounding box regions, as well as empty bo
 <br />
 Certain scars return better matches with different weights, so we include the option to adjust the weights. <br />
 <br />
-Weight options:
-*Scar Orientation*
-*Scar Length*
-*Scar Width*
-*Scar Area*
-*Scar Aspect Ratio*
-*Scar Location (x-direction)*
-*Scar Location (y-direction)*
-*Sum of Scar Pixel Values*
+Weight options: <br />
+*Scar Orientation* <br />
+*Scar Length* <br />
+*Scar Width* <br />
+*Scar Area* <br />
+*Scar Aspect Ratio* <br />
+*Scar Location (x-direction)* <br />
+*Scar Location (y-direction)* <br />
+*Sum of Scar Pixel Values* <br />
 
 
