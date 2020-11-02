@@ -24,7 +24,7 @@ Enter the path to the images and select **Go**. The import status will change if
 <br />
 The program takes a scar and bounding box as input, and then it cross references the image with the existing database and returns similar matches.  <br />
 <br />
-The application also supports multiple bounding box regions, as well as empty bounding boxes, in which the program will not return images that contain scars in that area. <br />
+The application also supports multiple bounding box regions, as well as empty bounding boxes, in which the program will not return images that contain scars in that region. <br />
 <br />
 Certain scars return better matches with different weights, so we include the option to adjust the weights. <br />
 <br />
