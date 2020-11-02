@@ -17,3 +17,6 @@ Finally, to launch the program: <br />
 `python app.py`
 
 ## How to Use
+
+![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/dash_example.png)
+
