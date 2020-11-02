@@ -38,4 +38,11 @@ Weight options: <br />
 * Scar Location (y-direction) <br />
 * Sum of Scar Pixel Values <br />
 
+## Contributors
+Rosa Gradilla 
+Nate Wagner
+
+
+
+
 
