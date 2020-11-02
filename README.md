@@ -18,7 +18,7 @@ pip install -r requirements.txt
 ```sh
 python app.py
 ```
-## How to Use
+## Usage
 
 Enter the path to the images and select **Go**. The import status will change if the images are successfully imported. <br />
 <br />
