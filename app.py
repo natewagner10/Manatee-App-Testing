@@ -20,9 +20,9 @@ import dash_table
 ######################################################################################################
 
 ### Needed Paths ###
-path_to_images = '/Users/natewagner/Documents/Mote_Manatee_Project/data/data_folders/'
-path_to_mask = '/Users/natewagner/Documents/Mote_Manatee_Project/canny_filled2.png'
-path_to_blank = '/Users/natewagner/Documents/Mote_Manatee_Project/data/BLANK_SKETCH_updated.jpg'
+path_to_images = # '/INSERT/PATH/TO/SUBFOLDERS/' #
+path_to_mask = # '/INSERT/PATH/TO/canny_filled2.png/' #
+path_to_blank = # '/INSERT/PATH/TO/BLANK_SKETCH_updated.jpg/' #
 
 # slider 
 orientation_perc = 1
