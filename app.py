@@ -256,7 +256,6 @@ if 'find_matches_func' not in globals():
 paths_to_images = getFilePaths(path_to_images)
 find_matches_func.paths = paths_to_images
 find_matches_func.preLoadData()
-find_matches_func.getImagePath('U4757.jpg')
 
 ######################################################################################################
 
