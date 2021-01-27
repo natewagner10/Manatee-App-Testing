@@ -218,8 +218,9 @@ class Compare_ROIS(object):
     def getImagePath(self, image_name):
         for name in self.paths:
             if name.endswith(str(image_name)):
-                my_path = name.split('/')
-                return my_path[-2] + '/' + my_path[-1]
+                my_path = os.path.normpath(name)
+                components = my_path.split(os.sep)
+                return os.path.join(components[-2], components[-1])
 
 def readjust(weights):
     """
