@@ -40,6 +40,11 @@ Weight options: <br />
 * Scar Location (x-direction) <br />
 * Scar Location (y-direction) <br />
 
+## How it works
+<br />
+The user draws a scar, then puts a bounding box around the scar.  We then extract the scar contours, and compute a bunch of metrics, such as height, width, scar orientation, and some others.   We then take that bounding box, and extract all scar contours that are within the given region from the database.  Finally, we compute a similarity measure based on how similar the scar contours are. <br />
+<br />
+
 ## Contributors
 Rosa Gradilla <br />
 Nate Wagner <br />
