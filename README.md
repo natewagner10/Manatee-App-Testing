@@ -20,17 +20,15 @@ python app.py
 ```
 ## Usage
 
-Enter the path to the images and select **Go**. The import status will change if the images are successfully imported. <br />
-<br />
-The program takes a scar and bounding box as input, and then it cross references the image with the existing database and returns similar matches.  <br />
+The program takes a scar and bounding box as input, and then it cross references the image with the existing database and returns similar matches (similar scars in similar locations).  <br />
 <br />
 The application also supports multiple bounding box regions, as well as empty bounding boxes, in which the program will not return images that contain scars in that region. <br />
 <br />
-Certain scars return better matches with different weights, so we include the option to adjust the weights. <br />
+Changing the weights can have a big effect of the quality of matches depending on the input scars, so we include the option to adjust the weights (i.e. put more emphasis on orientation). <br />
 <br />
 The program also supports filters such as the number of scars that should be present in the bounding box search regions. <br />
 <br />
-When running the program the first time, it runs the manatee database through a CNN classifier and creates a csv file (stored in the assets folder) specifiying whether a manatee has a tail mutilation or not. Then the user can specify a filter to include matches with tail mutilations or not. The program will recognize new sketches in the database and run these through the classifier and storing the tail mutilation information in the csv file accordingly. <br />
+When running the program the first time, it runs the manatee database through a CNN classifier and creates a csv file (stored in the assets folder) specifiying whether a manatee has a tail mutilation or not. Then the user can specify a filter to include matches with tail mutilations or not. The program will recognize when new images are added to the database and will run these through the classifier and storing the tail mutilation information in the csv file accordingly. <br />
 <br />
 
 Weight options: <br />
