@@ -2,7 +2,7 @@
 
 Code repository for New College of Florida and Mote Marine Research Laboratory collaboration.
 
-![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/dash_example.png)
+![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/dash_example2.png)
 
 ## Setup
 
