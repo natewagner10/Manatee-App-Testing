@@ -28,9 +28,7 @@ The application also supports multiple bounding box regions, as well as empty bo
 <br />
 Certain scars return better matches with different weights, so we include the option to adjust the weights. <br />
 <br />
-<br />
 The program also supports filters such as the number of scars that should be present in the bounding box search regions. <br />
-<br />
 <br />
 When running the program the first time, it runs the manatee database through a CNN classifier and creates a csv file (stored in the assets folder) specifiying whether a manatee has a tail mutilation or not. Then the user can specify a filter to include matches with tail mutilations or not. The program will recognize new sketches in the database and run these through the classifier and storing the tail mutilation information in the csv accordingly. <br />
 <br />
