@@ -28,7 +28,7 @@ Changing the weights can have a big effect of the quality of matches depending o
 <br />
 The program also supports filters such as the number of scars that should be present in the bounding box search regions. <br />
 <br />
-When running the program the first time, it runs the manatee database through a CNN classifier and creates a csv file (stored in the assets folder) specifiying whether a manatee has a tail mutilation or not. Then the user can specify a filter to include matches with tail mutilations or not. The program will recognize when new images are added to the database and will run these through the classifier and storing the tail mutilation information in the csv file accordingly. <br />
+When running the program the first time, it runs the manatee database through a CNN classifier and creates a csv file (stored in the assets folder) specifiying whether a manatee has a tail mutilation or not. Then the user can specify a filter to include or exclude matches with tail mutilations. The program will recognize when new images are added to the database and will run these through the classifier and storing the tail mutilation information in the csv file accordingly. <br />
 <br />
 
 Weight options: <br />
