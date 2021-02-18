@@ -469,6 +469,7 @@ app.layout = html.Div(
                                2: {'label': '2'}
                            }
                        ),
+                dbc.Tooltip("Scar Location (y-direction): horizontal axis location with respect to the whole sketch. Increasing this will add additional penalties to scars being further away from the drawn scar.",target="locationy"),                                                                     
                 html.Div(id='hidden-div8', style={'display':'none'}),                       
                     #html.Hr(),
                     html.Div([
@@ -801,5 +802,4 @@ def tail_mute_filter(value):
 
 if __name__ == '__main__':
     app.run_server()
-    
     
