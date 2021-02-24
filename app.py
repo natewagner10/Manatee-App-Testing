@@ -310,7 +310,6 @@ def readjust(weights):
         new_weights[i+1:] = after_arr + excess
     return(new_weights)
 
-
 def getFilePaths(root_dir):
     file_paths = []
     if not os.path.exists(path_to_tail_mute_info):
@@ -319,10 +318,15 @@ def getFilePaths(root_dir):
             filewriter.writerow(['Sketch_ID', 'Has_Tail_Mute'])
     with open(path_to_tail_mute_info) as f:
         reader = csv.reader(f)
-        current_sketch_names = [i[0] for i in reader]                
+        current_sketch_names = []
+        for i in reader:
+            try:
+                current_sketch_names.append(i[0])
+            except:
+                continue
     for root, _, fnames in sorted(os.walk(root_dir, followlinks=True)):
         for fname in sorted(fnames):
-            if fname not in current_sketch_names:
+            if fname not in current_sketch_names or len(current_sketch_names) == 0:
                 with open(path_to_tail_mute_info, 'a', newline='') as csvfile:
                     filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     filewriter.writerow([str(fname), 'NA'])
@@ -330,8 +334,13 @@ def getFilePaths(root_dir):
             file_paths.append(path)
     with open(path_to_tail_mute_info) as f:
         reader = csv.reader(f)
-        tail_mute_data = [i for i in reader]    
-    itemDict = {item[0]: item[1] for item in tail_mute_data}
+        tail_mute_data = [i for i in reader]  
+    itemDict = {}
+    for item in tail_mute_data:
+        try:
+            itemDict[item[0]] = item[1]
+        except:
+            continue
     return file_paths, itemDict
     
 if 'find_matches_func' not in globals():
