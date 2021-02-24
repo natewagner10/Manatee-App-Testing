@@ -1,6 +1,6 @@
 # Manatee Program
 
-Code repository for New College of Florida and Mote Marine Research Laboratory collaboration.
+Code repository for the manatee matching program.
 
 ![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/dash_example2.png)
 
