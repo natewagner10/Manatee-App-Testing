@@ -37,7 +37,7 @@ Important: The first time running the application it’s critical not to interru
 To start finding similar sketches, select the pen tool from the toolbox at the bottom of the Sketch box and draw the desired scar(s). <br />
 <br />
 
-<img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure1.png" width="500px" height="200px">
+<img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure1.png" width="100%" height="100%">
 
 Afterwards, select the bounding box tool and place a box around either both scars (a.) or each scar individually (b.). <br />
 <br />
