@@ -1,7 +1,5 @@
 # Manatee Matching Application
 
-Code repository for the manatee matching program.
-
 ![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/app_example.png)
 
 ## 1. Setup
