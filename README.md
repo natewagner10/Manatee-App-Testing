@@ -2,7 +2,7 @@
 
 Code repository for the manatee matching program.
 
-![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/dash_example2.png)
+![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/app_example.png)
 
 ## Setup
 
