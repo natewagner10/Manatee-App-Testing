@@ -1,4 +1,4 @@
-# Manatee Program
+# Manatee Matching Application
 
 Code repository for the manatee matching program.
 
