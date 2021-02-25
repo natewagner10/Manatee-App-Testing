@@ -73,9 +73,7 @@ The *Browse Matches* box is a scrollable data table containing all the matches o
 
 ### 2.5 Scar weights and filters
 
-<p style="float: right">
-<img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure5.png" width="35%" height="35%">
-</p>
+![image](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure5.png){: style="float: right"}
 
 The box on the left hand side of the application contains each scar metric and its corresponding weight.  Certain times adjusting the weights on the scar metrics can help to improve the quality of returned matches. 
 
