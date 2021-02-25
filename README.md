@@ -20,33 +20,33 @@ python app.py
 
 ###   2.1 Assets folder
 
-&nbsp; The assets folder contains items needed to run the program. Specifically, it contains the blank-manatee-sketch, manatee-outline-removal-mask, tail-&nbsp;mutilation-model-weights and the CSV-file containing the tail mutilation information.  <br />
+The assets folder contains items needed to run the program. Specifically, it contains the blank-manatee-sketch, manatee-outline-removal-mask, tail-mutilation-model-weights and the CSV-file containing the tail mutilation information.  <br />
 <br />
 
 ###   2.2 First time launching application
 
-&nbsp;The first time running the application, the program takes all images in the dataset and runs them through a convolutional neural network classifier.  The &nbsp;classifier inputs 196x196 cropped images of the tail and outputs a label indicating whether the manatee has a tail mutilation.  Due to this process being &nbsp;time consuming, we only run the images through the classifier on the initial program launch, and we store the labels in *file tail_mute_info.csv* in the &nbsp;assets folder.  The file contains two fields, *Sketch_ID* and *Has_Tail_Mute*, where *Sketch_ID* contains the name of the image and *Has_Tail_Mute* takes &nbsp;value 0 if a tail mute is present and 1 if not.  Subsequent program launches, the application reads in the CSV file and cross references the data with the &nbsp;image database and checks if new images were added.  If new images were added to the dataset, the program runs the new image through the classifier and &nbsp;stores the tail mutilation information in the CSV accordingly.  
+The first time running the application, the program takes all images in the dataset and runs them through a convolutional neural network classifier.  The classifier inputs 196x196 cropped images of the tail and outputs a label indicating whether the manatee has a tail mutilation.  Due to this process being time consuming, we only run the images through the classifier on the initial program launch, and we store the labels in *file tail_mute_info.csv* in the assets folder.  The file contains two fields, *Sketch_ID* and *Has_Tail_Mute*, where *Sketch_ID* contains the name of the image and *Has_Tail_Mute* takes value 0 if a tail mute is present and 1 if not.  Subsequent program launches, the application reads in the CSV file and cross references the data with the image database and checks if new images were added.  If new images were added to the dataset, the program runs the new image through the classifier and stores the tail mutilation information in the CSV accordingly.  
 
-&nbsp;**Important:** The first time running the application it’s critical not to interrupt the process because the program is filling out all the tail mutilation &nbsp;information and problems can occur.  <br />
+**Important:** The first time running the application it’s critical not to interrupt the process because the program is filling out all the tail mutilation information and problems can occur.  <br />
 <br />
 
 ###   2.3	Sketching
 
-&nbsp;To start finding similar sketches, select the pen tool from the toolbox at the bottom of the Sketch box and draw the desired scar(s). <br />
+To start finding similar sketches, select the pen tool from the toolbox at the bottom of the Sketch box and draw the desired scar(s). <br />
 <br />
 
 <p align="center">
 <img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure1.png" width="70%" height="70%">
 </p>
 
-&nbsp;Afterwards, select the bounding box tool and place a box around either both scars (**a.**) or each scar individually (**b.**). <br />
+Afterwards, select the bounding box tool and place a box around either both scars (**a.**) or each scar individually (**b.**). <br />
 <br />
 
 <p align="center">
 <img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure2.png" width="70%" height="70%">
 </p>
 
-&nbsp;Given we want to find similar scars in similar locations, the bounding box takes care of scar location. <br />
+Given we want to find similar scars in similar locations, the bounding box takes care of scar location. <br />
 <br />
 
 **Tail Mutilations:**
