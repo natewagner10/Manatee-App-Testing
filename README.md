@@ -128,7 +128,7 @@ The user can also include bounding boxes with no scars in them.  These empty box
 In the case of the example shown above, by including the empty box in the tail, it cut the number returned from 296 to 220, around 26%.  At times the inclusion of these empty boxes can significantly cut down the number of returned images. <br />
 <br />
 
-## How it works
+## 3. How it works
 
 The user draws a scar, then puts a bounding box around the scar.  We then extract the scar contours, and compute some metrics such as height, width, scar orientation, and some others.   We then take that bounding box, and extract all scar contours that are within the given region from the database.  Finally, we compute a similarity measure based on how similar the scar contours are. <br />
 <br />
