@@ -20,7 +20,7 @@ python app.py
 ```
 ## 2. Usage
 
-###   &nbsp; 2.1 Assets folder
+###   2.1 Assets folder
 
 The assets folder contains items needed to run the program. Specifically, it contains the blank-manatee-sketch, manatee-outline-removal-mask, tail-mutilation-model-weights and the CSV-file containing the tail mutilation information.  <br />
 <br />
@@ -89,7 +89,44 @@ Weight options: <br />
 * Scar Location (x-direction) <br />
 * Scar Location (y-direction) <br />
 
+**Tail Mutilation Filter:**
 
+The application also includes a filter indicating whether returned matches should include manatees with a tail mutilation or not.  Since this information was obtained using a model that predicts with ~99% accuracy, not all images will contain the correct classification.  If the user comes across a manatee with the wrong classification, they should open the CSV, find the manatee and change it accordingly. <br />
+<br />
+
+
+**Specifying the Number of Scars in Match: **
+
+In **Figure 2** we show two ways the user can include the bounding box.  In the single box approach as in **a.**, if the user specifies a range (1:3), this means there must be between 1 and 3 scars in the region in all returned matches.  In the double bounding box approach shown in **b.**, this would mean there must be between 1 and 3 scars in each region returned.  <br />
+<br />
+
+**Example:**
+
+We have a dataset of 2071 images.  Here in the first example we set the *Number of Scars in Match* option to be exactly 2.  This returned 296 matches. <br />
+<br />
+
+<p align="center">
+<img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure6.png" width="70%" height="70%">
+</p>
+
+In the second example, we set the *Number of Scars in Match* option to 1.  This returned 80 matches.  This makes sense because the regions are much smaller and the criteria is much more strict, but is good to keep in mind when searching. <br />
+<br />
+
+<p align="center">
+<img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure7.png" width="70%" height="70%">
+</p>
+
+**Empty Boxes:**
+
+The user can also include bounding boxes with no scars in them.  These empty boxes are used to tell the program to return matches that don’t contain a scar in that region.  Here is an example: <br />
+<br />
+
+<p align="center">
+<img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure8.png" width="70%" height="70%">
+</p>
+
+In the case of the example shown above, by including the empty box in the tail, it cut the number returned from 296 to 220, around 26%.  At times the inclusion of these empty boxes can significantly cut down the number of returned images. <br />
+<br />
 
 ## How it works
 
