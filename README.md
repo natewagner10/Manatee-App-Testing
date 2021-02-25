@@ -44,11 +44,34 @@ To start finding similar sketches, select the pen tool from the toolbox at the b
 Afterwards, select the bounding box tool and place a box around either both scars (a.) or each scar individually (b.). <br />
 <br />
 
-![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure2.png)
+<p align="center">
+<img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure2.png" width="70%" height="70%">
+</p>
 
 Given we want to find similar scars in similar locations, the bounding box takes care of scar location. <br />
 <br />
 
+**Tail Mutilations:**
+
+The Brush Width tool is useful for drawing and filling in tail mutilations. <br />
+<br />
+
+<p align="center">
+<img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure3.png" width="70%" height="70%">
+</p>
+
+### 2.4 Searching
+
+After drawing a scar(s) and giving the application a bounding box(s), click the *Search* button to populate the *Browse Matches* box.  The application takes the given bounding box region and finds every image in the dataset that also contains a scar in this region.  The program then computes how similar the scars are by comparing some scar metrics. <br />
+<br />
+
+<p align="center">
+<img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure4.png" width="70%" height="70%">
+</p>
+
+The *Browse Matches* box is a scrollable data table containing all the matches ordered by how similar the scars are. 
+
+### 2.5 Scar weights and filters
 
 
 
