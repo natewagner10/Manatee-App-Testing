@@ -66,7 +66,7 @@ After drawing a scar(s) and giving the application a bounding box(s), click the 
 <br />
 
 <p align="center">
-<img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure4.png" width="70%" height="70%">
+<img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure4.png" width="50%" height="50%">
 </p>
 
 The *Browse Matches* box is a scrollable data table containing all the matches ordered by how similar the scars are. 
