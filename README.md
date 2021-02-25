@@ -27,9 +27,9 @@ The assets folder contains items needed to run the program. Specifically, it con
 
 ###   2.2 First time launching application
 
-The first time running the application, the program takes all images in the dataset and runs them through a convolutional neural network classifier.  The classifier inputs 196x196 cropped images of the tail and outputs a label indicating whether the manatee has a tail mutilation.  Due to this process being time consuming, we only run the images through the classifier on the initial program launch, and we store the labels in a file tail_mute_info.csv in the assets folder.  The file contains two fields, Sketch_ID and Has_Tail_Mute, where Sketch_ID contains the name of the image and Has_Tail_Mute takes value 0 if a tail mute is present and 1 if not.  Subsequent program launches, the application reads in the CSV file and cross references the data with the image database and checks if new images were added.  If new images were added to the dataset, the program runs the new image through the classifier and stores the tail mutilation information in the CSV accordingly.  
+The first time running the application, the program takes all images in the dataset and runs them through a convolutional neural network classifier.  The classifier inputs 196x196 cropped images of the tail and outputs a label indicating whether the manatee has a tail mutilation.  Due to this process being time consuming, we only run the images through the classifier on the initial program launch, and we store the labels in a *file tail_mute_info.csv* in the assets folder.  The file contains two fields, *Sketch_ID* and *Has_Tail_Mute*, where *Sketch_ID* contains the name of the image and *Has_Tail_Mute* takes value 0 if a tail mute is present and 1 if not.  Subsequent program launches, the application reads in the CSV file and cross references the data with the image database and checks if new images were added.  If new images were added to the dataset, the program runs the new image through the classifier and stores the tail mutilation information in the CSV accordingly.  
 
-Important: The first time running the application it’s critical not to interrupt the process because the program is filling out all the tail mutilation information and problems can occur.  <br />
+**Important:** The first time running the application it’s critical not to interrupt the process because the program is filling out all the tail mutilation information and problems can occur.  <br />
 <br />
 
 ###   2.3	Sketching
@@ -41,7 +41,7 @@ To start finding similar sketches, select the pen tool from the toolbox at the b
 <img src="https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/figure1.png" width="70%" height="70%">
 </p>
 
-Afterwards, select the bounding box tool and place a box around either both scars (a.) or each scar individually (b.). <br />
+Afterwards, select the bounding box tool and place a box around either both scars (**a.**) or each scar individually (**b.**). <br />
 <br />
 
 <p align="center">
@@ -53,7 +53,7 @@ Given we want to find similar scars in similar locations, the bounding box takes
 
 **Tail Mutilations:**
 
-The Brush Width tool is useful for drawing and filling in tail mutilations. <br />
+The *Brush Width* tool is useful for drawing and filling in tail mutilations. <br />
 <br />
 
 <p align="center">
@@ -95,7 +95,7 @@ The application also includes a filter indicating whether returned matches shoul
 <br />
 
 
-**Specifying the Number of Scars in Match: **
+**Specifying the Number of Scars in Match:**
 
 In **Figure 2** we show two ways the user can include the bounding box.  In the single box approach as in **a.**, if the user specifies a range (1:3), this means there must be between 1 and 3 scars in the region in all returned matches.  In the double bounding box approach shown in **b.**, this would mean there must be between 1 and 3 scars in each region returned.  <br />
 <br />
