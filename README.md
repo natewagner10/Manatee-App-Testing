@@ -20,7 +20,7 @@ python app.py
 ```
 ## 2. Usage
 
-###  $~$ 2.1 Assets folder
+###   \ \ 2.1 Assets folder
 
 The assets folder contains items needed to run the program. Specifically, it contains the blank-manatee-sketch, manatee-outline-removal-mask, tail-mutilation-model-weights and the CSV-file containing the tail mutilation information.  <br />
 <br />
