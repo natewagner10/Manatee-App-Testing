@@ -1,34 +1,45 @@
+"""
+Mote Marine Laboratory Collaboration
+
+Manatee Matching Program
+
+Written by Nate Wagner, Rosa Gradilla 
+"""
 
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
-import cv2
 import base64
-import os
 import json
 import numpy as np
 from dash_canvas import DashCanvas
 from dash_canvas.utils import parse_jsonstring
 import pandas as pd
 from PIL import Image
-import ntpath
 import dash_table
-import torch.nn as nn
 import torch
-import csv
+from Documents.Mote_Marine_Manatees.app3.compare_rois import Compare_ROIS
+from Documents.Mote_Marine_Manatees.app3.cnn import CNN
+from Documents.Mote_Marine_Manatees.app3.helpers import readjust, getFilePaths
 
-######################################################################################################
+############################################################
+#  Needed paths
+############################################################
 
-### Needed Paths ###
-path_to_images = 'Z:\Temp\SKETCH_MATCHING_TEST'
-path_to_mask = 'assets/canny_filled2.png'
-path_to_blank = 'assets/BLANK_SKETCH_updated.jpg'
-path_to_cnn = 'assets/tail_mute_cnn_15_epochs_99.pt'
-path_to_tail_mute_info = 'assets/tail_mute_info.csv'
+path_to_images = '/Users/natewagner/Documents/Mote_Manatee_Project/data/data_folders/'
+path_to_mask = '/Users/natewagner/Documents/Mote_Manatee_Project/data/new_mask_temp4.png'
+path_to_blank = '/Users/natewagner/Documents/Mote_Manatee_Project/data/BLANK_SKETCH_updated.jpg'
+path_to_cnn = '/Users/natewagner/Documents/Mote_Manatee_Project/data/assets/tail_mute_cnn_15_epochs_99.pt'
+path_to_tail_mute_info = '/Users/natewagner/Documents/Mote_Manatee_Project/data/tail_mute_info.csv'
+path_to_template = '/Users/natewagner/Documents/Mote_Manatee_Project/data/BLANK_SKETCH_updated_cropped.jpg'
 
-# slider 
+############################################################
+#  Initiate model and 
+#  Compare_ROIS class, initial slider weights
+############################################################
+
 orientation_perc = 1
 MA_perc = 1
 ma_perc = 1
@@ -38,337 +49,36 @@ locX_perc = 1
 locY_perc = 1
 pixs_perc = 1
 
-### Tail Mute CNN ###
-class CNN(nn.Module):
-    def __init__(self):
-        super(CNN,self).__init__()        
-        self.layer1 = []
-        self.layer1.extend([
-            nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2), # 16 @ 196 * 196
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2, padding=1),  # 16 99 * 99
-            nn.Conv2d(16, 32, kernel_size=5, stride=1, padding=2), # 32 99 * 99
-            nn.ReLU(),            
-            nn.MaxPool2d(kernel_size=2, stride=2, padding=1),  # 32 50*50
-            nn.Conv2d(32, 64, kernel_size=5, stride=1, padding=2), # 64 50 * 50
-            nn.ReLU(),                                     
-            nn.Conv2d(64, 128, kernel_size=5, stride=1, padding=2), # 128 50 * 50
-            nn.ReLU(),                                                 
-        ])
-        self.layer1 = nn.Sequential(*self.layer1)
-        self.fc = []
-        self.fc.extend([
-            nn.Linear(320000,2),
-            nn.Sigmoid(),            
-            ])
-        self.fc = nn.Sequential(*self.fc)
-    def forward(self, z):
-        out1 = self.layer1(z)
-        out2 = self.fc(out1.view(out1.size(0),-1))        
-        return out2
-
-
-
-
-
 model = CNN()
 model.load_state_dict(torch.load(path_to_cnn, map_location=torch.device('cpu')))
-
-
-
-
-
-def Navbar():
-    navbar = dbc.NavbarSimple(
-        brand="Manatee Identification",
-        color="primary",
-        expand = 'md',
-        dark=True,
-    )
-    return navbar
-
-class Compare_ROIS(object):
-    def __init__(self, paths, input_sketch, roi, mask, orien_perc, MA_perc, ma_perc, area_perc, aspect_perc, locX_perc, locY_perc, low_end, high_end, tail):
-        self.paths = paths
-        self.mask = mask
-        self.input_sketch = input_sketch
-        self.roi = roi #[x1,y1,x2,y2]
-        self.processed_images = None
-        self.orien_perc = 0.08
-        self.MA_perc = 0.23
-        self.ma_perc = 0.23
-        self.area_perc = 0.10
-        self.aspect_perc = 0.36
-        self.locX_perc = 0.10
-        self.locY_perc = 0.10
-        self.low_end = 1
-        self.high_end = 3
-        self.tail = 'unknown'
-        self.all_tail_info = None
-    def compare_rois(self):
-        # get ROI array
-        input_contour_info = []
-        for input_bb in self.roi:  
-            input_sketch_roi = self.input_sketch[int(input_bb[0]): int(input_bb[1]), int(input_bb[2]): int(input_bb[3])]
-            # preprocess input sketch roi
-            input_roi = self.preprocess(input_sketch_roi)        
-            # find contours in input sketch roi
-            input_contours = cv2.findContours(input_roi , cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-            # find contour rois in input sketch roi       
-            input_shapes, input_area, input_num_contour, input_bb_dim = self.find_contours(input_contours[0], input_roi)
-            input_contour_info.append([input_shapes, input_area, input_num_contour, input_bb_dim, self.tail])
-        distance_dict = []
-    # First get all file names in list file_names    
-        for i in range(len(self.processed_images)):
-            # get ROI array and preprocess               
-            for x in range(len(self.roi)):                
-                if self.tail == 'mute' or self.tail == 'no_mute':
-                    if self.tail == 'mute':
-                        mute_switch = 0
-                    else:
-                        mute_switch = 1
-                    if mute_switch == self.processed_images[i][2]:                 
-                        sketch_roi = self.processed_images[i][1][int(self.roi[x][0]): int(self.roi[x][1]), int(self.roi[x][2]): int(self.roi[x][3])]
-                        # find contours in ROI
-                        contours = cv2.findContours(sketch_roi , cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-                        # get contours rois in sketch roi                
-                        contours_shapes, contour_area, num_contours, bb_dims  = self.find_contours(contours[0], sketch_roi)  
-                        distances = self.compute_distances(input_contour_info[x][3], bb_dims, str(self.processed_images[i][0]))  
-                        if distances != "NA":
-                            distance_dict.append((str(self.processed_images[i][0]), distances))
-                else:                  
-                    sketch_roi = self.processed_images[i][1][int(self.roi[x][0]): int(self.roi[x][1]), int(self.roi[x][2]): int(self.roi[x][3])]
-                    # find contours in ROI
-                    contours = cv2.findContours(sketch_roi , cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-                    # get contours rois in sketch roi                
-                    contours_shapes, contour_area, num_contours, bb_dims  = self.find_contours(contours[0], sketch_roi)  
-                    distances = self.compute_distances(input_contour_info[x][3], bb_dims, str(self.processed_images[i][0]))  
-                    if distances != "NA":
-                        distance_dict.append((str(self.processed_images[i][0]), distances))                    
-                    
-        distance_dict_df = pd.DataFrame(distance_dict)
-        unique_names_cnts = distance_dict_df.groupby(0)[1].agg(['count', 'mean'])
-        unique_names_cnts['names'] = unique_names_cnts.index
-        has_all_scars = unique_names_cnts[unique_names_cnts['count'] >= len(self.roi)]
-        returned = has_all_scars[['names', 'mean']]        
-        returned_list = returned.values.tolist()     
-        returned_list = sorted(returned_list, key = lambda x: x[1])         
-        returned_list2 = []
-        for idx, img in enumerate(returned_list):
-            returned_list2.append([idx+1, img[0], img[1]])
-        return returned_list2
-    def preprocess(self, img):
-        # blur
-        img[img < 215] = 0
-        img = cv2.blur(img, (2,2))
-        # black background
-        img = cv2.bitwise_not(img)
-        # threshold
-        _,img = cv2.threshold(img, 50, 255, cv2.THRESH_BINARY)        
-        return img
-    def find_contours(self, contours_list, sketch_roi):
-        contours_rois = []
-        contour_area = []
-        num_contours = 0
-        bb_dims = []
-        for contour in contours_list:
-            #filled = cv2.fillPoly(sketch_roi.copy(), contours_list, 255)           
-            x, y, w, h = cv2.boundingRect(contour)
-            roi = sketch_roi[y:y + h, x:x + w]            
-            # contour center coordinates
-            contour_x = round(x + (w/2)) 
-            contour_y = round(y + (h/2))               
-            area = cv2.contourArea(contour)  
-            # extent
-            rect_area = w*h
-            extent = float(area)/rect_area
-            if area > 20 and len(contour) >= 5:
-                (x,y), (MA,ma), angle = cv2.fitEllipse(contour)   
-                if MA == 0:
-                    MA = 1
-                aspect_ratio = float(ma)/MA                           
-                contours_rois.append(roi)
-                contour_area.append(area)
-                bb_dims.append([np.array([w,h]), area, angle, np.array([MA,ma]), np.array([contour_x, contour_y]), aspect_ratio, extent]) 
-                num_contours += 1
-        return contours_rois, contour_area, num_contours, bb_dims    
-    def compute_distances(self, input_contours_shape, contours_shape, name):
-        num_input_scars = len(input_contours_shape)
-        num_scars = len(contours_shape)    
-        if num_input_scars == 0 and num_scars > 0:
-            return 'NA'
-        if num_input_scars == 0 and num_scars == 0:
-            return 0
-        #if num_input_scars != 0 and num_scars != 0:
-        if num_scars <= self.high_end and num_scars >= self.low_end:
-        #if num_input_scars != 0 and num_scars != 0:
-            comparisons = []
-            for shape in input_contours_shape:                
-                for num, shape2 in enumerate(contours_shape):
-                    # Separate h,w and MA,ma and x,y
-                    input_h, input_w = shape[0]
-                    h,w = shape2[0]
-                    input_MA, input_ma = shape[3]  
-                    MA, ma = shape2[3]
-                    input_x, input_y = shape[4]
-                    x,y = shape2[4]    
-                    input_area = shape[1]
-                    area = shape2[1]
-                    input_aspect = shape[5]
-                    aspect = shape2[5]                    
-                    # Compute percentage differences for each feature
-                    diff_in_x = abs(input_x - x)
-                    percentage_in_x = (100*diff_in_x)/input_x
-                    diff_in_y = abs(input_y - y)
-                    percentage_in_y = (100*diff_in_y)/input_y
-                    diff_in_MA = abs(input_MA - MA)
-                    percentage_MA = (100*diff_in_MA)/input_MA
-                    diff_in_ma = abs(input_ma - ma)/ input_ma
-                    percentage_ma = (100*diff_in_ma)/input_ma
-                    diff_in_area = abs(input_area - area)/ input_area
-                    percentage_area = (100*diff_in_area)/input_area
-                    diff_in_aspect = abs(input_aspect - aspect)/ input_aspect
-                    percentage_aspect = (100*diff_in_aspect)/input_aspect                                        
-                    diff_in_angle = abs(shape[2] - shape2[2])
-                    percentage_angle = (100*(diff_in_angle))/shape[2]
-                    comparisons.append([num, 1/8*(self.orien_perc * percentage_angle + self.MA_perc * percentage_MA + self.ma_perc * percentage_ma + self.area_perc * percentage_area + self.aspect_perc * percentage_aspect + self.locX_perc * percentage_in_x + self.locY_perc * percentage_in_y)])
-            if len(comparisons) != 0:
-                distances = self.computeScore(comparisons, num_input_scars)                                    
-            return np.mean(distances)
-        else:
-            return 'NA'
-    def removeOutline(self, img, mask):
-        mask = cv2.imread(path_to_mask, cv2.IMREAD_GRAYSCALE)
-        blur = cv2.GaussianBlur(mask,(5,5),0)
-        mask = cv2.addWeighted(blur,1.5,mask,-0.5,0)
-        mask[mask != 0] = 1          
-        img = cv2.resize(img, (259, 559), interpolation= cv2.INTER_NEAREST)
-        img[mask == 1] = 255
-        return img
-    def preLoadData(self):
-        #sketch_names = [] 
-        processed_images = []
-        sketch_names = self.paths    
-        for i in range(len(sketch_names)):
-            # get sketch path
-            sketch_path = sketch_names[i]
-            # read sketch in grayscale format
-            try:
-                sketch = cv2.imread(sketch_path, cv2.IMREAD_GRAYSCALE)
-                sketch = cv2.resize(sketch, (259, 559), interpolation= cv2.INTER_NEAREST)                                                             
-                sk_name = sketch_path.split(os.sep)[-1]
-                if self.all_tail_info[sk_name] == 'NA':                                        
-                    tail = sketch[363:559,30:226] / 255                
-                    im_tensor = torch.tensor(tail.astype(np.float32))    
-                    probs = model(im_tensor.unsqueeze(0).unsqueeze(0))                
-                    _, predicted = torch.max(probs.data, 1)      
-                    self.all_tail_info[sk_name] = predicted.item()
-                    new_df = pd.DataFrame(self.all_tail_info.items())
-                    new_df.to_csv(path_to_tail_mute_info, index=False)   
-                sketch_no_outline = self.removeOutline(sketch, self.mask)
-                preprocessed_img = self.preprocess(sketch_no_outline)
-                sketch_name = ntpath.basename(sketch_names[i])
-                processed_images.append([sketch_name, preprocessed_img, int(self.all_tail_info[sk_name])])
-            except:
-                continue
-            
-        self.processed_images = processed_images
-    def computeScore(self, dist, num_input_scars):        
-        scores = []
-        num_lookup_scars = len(list(set([el[0] for el in dist]))) 
-        while len(scores) <= num_input_scars - 1:
-            if len(scores) >= num_lookup_scars:
-                break
-            current_lowest = dist[np.argmin([el[1] for el in dist])]        
-            if len(dist) != 0:
-                scores.append(current_lowest)
-            dist = [item for item in dist if item[0] != current_lowest[0]]    
-        return np.sum([el[1] for el in scores])
-    def getImagePath(self, image_name):
-        for name in self.paths:
-            if name.endswith(str(image_name)):
-                my_path = os.path.normpath(name)
-                components = my_path.split(os.sep)
-                return os.path.join(components[-2], components[-1])
-
-def readjust(weights):
-    """
-    Reparameterize max values for weight range.
-    """
-    new_weights = weights.copy()
-    for i, weight in enumerate(weights):
-        # We need all other weights except for the one we are currently
-        # looking at because we need to adjust them accordingly
-        amt_unused = 1 - weight
-        # add unused amount to other values proportionally
-        excess = amt_unused/(len(weights)-1)
-        before = new_weights[:i]
-        after = new_weights[i+1:]
-        before_arr = np.array(before)
-        after_arr = np.array(after)
-        new_weights[:i] = before_arr + excess
-        new_weights[i+1:] = after_arr + excess
-    return(new_weights)
-
-def getFilePaths(root_dir):
-    file_paths = []
-    if not os.path.exists(path_to_tail_mute_info):
-        with open(path_to_tail_mute_info, 'w') as csvfile:
-            filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-            filewriter.writerow(['Sketch_ID', 'Has_Tail_Mute'])
-    with open(path_to_tail_mute_info) as f:
-        reader = csv.reader(f)
-        current_sketch_names = []
-        for i in reader:
-            try:
-                current_sketch_names.append(i[0])
-            except:
-                continue
-    for root, _, fnames in sorted(os.walk(root_dir, followlinks=True)):
-        for fname in sorted(fnames):
-            if fname not in current_sketch_names or len(current_sketch_names) == 0:
-                with open(path_to_tail_mute_info, 'a', newline='') as csvfile:
-                    filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                    filewriter.writerow([str(fname), 'NA'])
-            path = os.path.join(root, fname)
-            file_paths.append(path)
-    with open(path_to_tail_mute_info) as f:
-        reader = csv.reader(f)
-        tail_mute_data = [i for i in reader]  
-    itemDict = {}
-    for item in tail_mute_data:
-        try:
-            itemDict[item[0]] = item[1]
-        except:
-            continue
-    return file_paths, itemDict
     
 if 'find_matches_func' not in globals():
-    find_matches_func = Compare_ROIS(None, None, None, path_to_mask, orientation_perc, MA_perc, ma_perc, area_perc, aspect_perc, locX_perc, locY_perc, 1, 3, "unkown")
+    find_matches_func = Compare_ROIS(None, None, None, path_to_mask, orientation_perc, MA_perc, ma_perc, area_perc, aspect_perc, locX_perc, locY_perc, 1, 3, "unkown", path_to_template, path_to_tail_mute_info, model)
 
-paths_to_images, find_matches_func.all_tail_info = getFilePaths(path_to_images)
+paths_to_images, find_matches_func.all_tail_info = getFilePaths(path_to_images, path_to_tail_mute_info)
 find_matches_func.paths = paths_to_images
 find_matches_func.preLoadData()
 
-######################################################################################################
+############################################################
+#  User interface
+############################################################
 
-# LITERA
 app = dash.Dash(__name__, meta_tags=[{"content": "width=device-width"}], external_stylesheets=[dbc.themes.LITERA], assets_folder=path_to_images)
 server = app.server
 
 # dash canvas info
 filename = Image.open(path_to_blank)
 canvas_width = 259   # this has to be set to 259 because we use the canvas as input to the model
-
-score_html = " "
-n_html = " "
-num_matches_html = " "
-name_html = " "
-name_info = None
+canvas_height = 559
 
 app.layout = html.Div(
     [
-     Navbar(),
+     dbc.NavbarSimple(
+        brand="Manatee Matching Application",
+        color="primary",
+        expand = 'md',
+        dark=True,
+    ),
      html.Br(),
      dbc.Row(
          [
@@ -494,11 +204,11 @@ app.layout = html.Div(
                          )
                                        ],style = {'align-items': 'center', 'margin-left': '10%'}),                        
                        html.Div(id='hidden-div13', style={'display':'none'}), 
-                       dbc.Button(id="clear", children="Update Weights", color="primary", style = {'width': '76%', 'margin-left': '12.5%'}),
+                       dbc.Button(id="update_the_weights", children="Update Weights", color="primary", style = {'width': '76%', 'margin-left': '12.5%'}),
                        html.Span(id="slider-sum", style={"vertical-align": "middle"}),
                        html.Div(
                            [
-                            html.H6(children=['Number of Scars in Match:'], style={'textAlign': 'center', 'font-weight': 'normal', 'margin-bottom': '10px'}),
+                            html.H6(children=['Number of Scars in Match:'], style={'textAlign': 'center', 'font-weight': 'normal'}),
                             dcc.RangeSlider(
                                     id='my-range-slider',
                                     min=0,
@@ -527,7 +237,8 @@ app.layout = html.Div(
                                    max=40,
                                    step=1,
                                    value=1,
-                               ),                                         
+                               ),
+                           html.A(dbc.Button('Refresh',color="primary", style = {'width': '76%', 'margin-left': '12.5%', 'margin-bottom': '5px'}),href='/')                                       
                                ],
                            style = {"margin-top": "10px"}),                                                   
                        ],
@@ -548,14 +259,16 @@ app.layout = html.Div(
                                 DashCanvas(
                                     id='canvas',
                                     width=canvas_width,
+                                    height=canvas_height,
                                     filename=filename,
                                     lineColor='black',
                                     hide_buttons=['line', 'select', 'zoom', 'pan'],
                                     goButtonTitle="Search"                                    
-                                    ),
+                                    ),                                                            
                             ], style = {'margin-left': '25%',
                                         'margin-top': '7px'}
-                            ),
+                            ),   
+                                            
                     ],
                     style = {#'textAlign': 'center',
                              'width': '100%',
@@ -592,15 +305,19 @@ app.layout = html.Div(
     style={'padding': '0px 40px 0px 40px', 'height': '100%'}
 )
 
+
+############################################################
+#  Callbacks
+############################################################                                                                                
+                                        
 @app.callback([Output('sketch_output', 'children'),
                Output('sketch_output_info1', 'children')],
                 [Input('canvas', 'json_data'),
                  Input('canvas', 'n_clicks')],
-                [State('canvas', 'image_content')])
-def update_data(string,image,n):    
-    global name_info, names, switch, count, find_matches_func, num_returned, path_to_mask
+                )
+def update_data(string,image):    
+    global count, find_matches_func, num_returned, path_to_mask
     blank = base64.b64encode(open(path_to_blank, 'rb').read())    
-    switch = True
     is_rect = False
     if string:
         data = json.loads(string)
@@ -626,7 +343,6 @@ def update_data(string,image,n):
             find_matches_func.input_sketch = mask
             find_matches_func.roi = bounding_box_list
         matches = find_matches_func.compare_rois()
-        name_info = matches
         is_rect = False 
         images_url = []
         names_df = []
@@ -666,17 +382,10 @@ def update_data(string,image,n):
                        style = {'textAlign': 'center',
                                 'width': '100%',
                                 'align-items': 'center',
-                                }), html.H5("Number of Matches: " + str(len(names_df)))            
+                                }), html.H5("Number of Matches: " + str(len(names_df)))
     return html.Div([
     html.Img(src='data:image/png;base64,{}'.format(blank.decode()))
     ], style = {'align-items': 'center','margin-left':'35%'}), html.H5("Number of Matches: ")
-
-@app.callback(Output("canvas", "json_objects"), [Input("clear", "n_clicks")])
-def clear_canvas(n):
-    if n is None:
-        return dash.no_update
-    strings = ['{"objects":[ ]}', '{"objects":[]}']
-    return strings[n % 2]
 
 @app.callback(Output('canvas', 'lineColor'),
             [Input('color-picker', 'value')])
@@ -785,7 +494,7 @@ def sum_slider(value,value1,value2,value3,value4,value5,value6):
              Output('my-slider4', 'value'),
              Output('my-slider5', 'value'),
              Output('my-slider6', 'value')],
-             [Input('clear', 'n_clicks')])
+             [Input('update_the_weights', 'n_clicks')])
 def updateSliders(value):
     new,new1,new2,new3,new4,new5,new6 = readjust([orientation_perc,MA_perc,ma_perc,area_perc,aspect_perc,locX_perc,locY_perc])
     return new,new1,new2,new3,new4,new5,new6
@@ -811,4 +520,5 @@ def tail_mute_filter(value):
 
 if __name__ == '__main__':
     app.run_server()
+    
     
