@@ -21,7 +21,7 @@ import torch
 ############################################################
 
 class Compare_ROIS(object):    
-    def __init__(self, paths, input_sketch, roi, mask, orien_perc, MA_perc, ma_perc, area_perc, aspect_perc, locX_perc, locY_perc, low_end, high_end, tail, path_to_template, path_to_tail_mute_info, model):
+    def __init__(self, paths, path_to_template, path_to_tail_mute_info, input_sketch, roi, mask, orien_perc, MA_perc, ma_perc, area_perc, aspect_perc, locX_perc, locY_perc, low_end, high_end, tail, model):
         """
         Class to store image information and compute scar similarity metric
 
@@ -29,6 +29,10 @@ class Compare_ROIS(object):
         ----------
         paths : list
             file paths to images
+        path_to_template : str
+            file path to template image
+        path_to_tail_mute_info : str
+            file path to tail mute CSV file             
         input_sketch : np.array
             the input sketch the user draws
         roi : list
@@ -55,10 +59,6 @@ class Compare_ROIS(object):
             user defined number of scars returned high end 
         tail : str
             indicates whether user applies tail mute filter
-        path_to_template : str
-            file path to template image
-        path_to_tail_mute_info : str
-            file path to tail mute CSV file 
         model : CNN
             tail mute classifier 
 
@@ -323,9 +323,9 @@ class Compare_ROIS(object):
             # get sketch path
             sketch_path = sketch_names[i]
             # read sketch in grayscale format
-            try:
-                sketch = cv2.imread(sketch_path, cv2.IMREAD_GRAYSCALE)                                                                             
-                sk_name = sketch_path.split(os.sep)[-1]
+            sketch = cv2.imread(sketch_path, cv2.IMREAD_GRAYSCALE)                                                                             
+            sk_name = sketch_path.split(os.sep)[-1]
+            if sk_name[-1] == "g" or sk_name[-1] == "G":
                 if self.all_tail_info[sk_name] == 'NA':
                     sketch = cv2.resize(sketch, (259, 559), interpolation= cv2.INTER_NEAREST)                                        
                     tail = sketch[363:559,30:226] / 255                
@@ -339,8 +339,6 @@ class Compare_ROIS(object):
                 preprocessed_img = self.preprocess(sketch_no_outline)
                 sketch_name = ntpath.basename(sketch_names[i])
                 processed_images.append([sketch_name, preprocessed_img, int(self.all_tail_info[sk_name])])
-            except:
-                continue            
         self.processed_images = processed_images
     def computeScore(self, dist, num_input_scars):
         """
