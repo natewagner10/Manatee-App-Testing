@@ -29,34 +29,22 @@ from Documents.Mote_Marine_Manatees.app3.helpers import readjust, getFilePaths
 ############################################################
 
 path_to_images = '/Users/natewagner/Documents/Mote_Manatee_Project/data/data_folders/'
-path_to_mask = '/Users/natewagner/Documents/Mote_Manatee_Project/data/new_mask_temp4.png'
+path_to_mask = '/Users/natewagner/Documents/Mote_Manatee_Project/data/MANATEE_MASK.png'
 path_to_blank = '/Users/natewagner/Documents/Mote_Manatee_Project/data/BLANK_SKETCH_updated.jpg'
 path_to_cnn = '/Users/natewagner/Documents/Mote_Manatee_Project/data/assets/tail_mute_cnn_15_epochs_99.pt'
 path_to_tail_mute_info = '/Users/natewagner/Documents/Mote_Manatee_Project/data/tail_mute_info.csv'
 path_to_template = '/Users/natewagner/Documents/Mote_Manatee_Project/data/BLANK_SKETCH_updated_cropped.jpg'
 
 ############################################################
-#  Initiate model and 
-#  Compare_ROIS class, initial slider weights
+#  Initiate model and Compare_ROIS class
 ############################################################
-
-orientation_perc = 1
-MA_perc = 1
-ma_perc = 1
-area_perc = 1
-aspect_perc = 1
-locX_perc = 1
-locY_perc = 1
-pixs_perc = 1
 
 model = CNN()
 model.load_state_dict(torch.load(path_to_cnn, map_location=torch.device('cpu')))
     
-if 'find_matches_func' not in globals():
-    find_matches_func = Compare_ROIS(None, None, None, path_to_mask, orientation_perc, MA_perc, ma_perc, area_perc, aspect_perc, locX_perc, locY_perc, 1, 3, "unkown", path_to_template, path_to_tail_mute_info, model)
+find_matches_func = Compare_ROIS(None, path_to_template, path_to_tail_mute_info, None, None, path_to_mask, 1, 1, 1, 1, 1, 1, 1, 1, 3, "unkown", model)
 
-paths_to_images, find_matches_func.all_tail_info = getFilePaths(path_to_images, path_to_tail_mute_info)
-find_matches_func.paths = paths_to_images
+find_matches_func.paths, find_matches_func.all_tail_info = getFilePaths(path_to_images, path_to_tail_mute_info)
 find_matches_func.preLoadData()
 
 ############################################################
@@ -315,8 +303,24 @@ app.layout = html.Div(
                 [Input('canvas', 'json_data'),
                  Input('canvas', 'n_clicks')],
                 )
-def update_data(string,image):    
-    global count, find_matches_func, num_returned, path_to_mask
+def update_data(string,image):  
+    """
+    
+
+    Parameters
+    ----------
+    string : TYPE
+        DESCRIPTION.
+    image : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    global find_matches_func
     blank = base64.b64encode(open(path_to_blank, 'rb').read())    
     is_rect = False
     if string:
@@ -403,8 +407,6 @@ def update_canvas_linewidth(value):
 @app.callback(Output('hidden-div', 'children'),
             [Input('my-slider', 'value')])
 def update_orientation(value):
-    global orientation_perc
-    orientation_perc = value
     find_matches_func.orien_perc = value
     return html.Div([
                 html.H5("test"),                
@@ -413,8 +415,6 @@ def update_orientation(value):
 @app.callback(Output('hidden-div2', 'children'),
             [Input('my-slider1', 'value')])
 def update_MA(value):
-    global MA_perc
-    MA_perc = value
     find_matches_func.MA_perc = value
     return html.Div([
                 html.H5("test"),                
@@ -423,8 +423,6 @@ def update_MA(value):
 @app.callback(Output('hidden-div3', 'children'),
             [Input('my-slider2', 'value')])
 def update_ma(value):
-    global ma_perc
-    ma_perc = value
     find_matches_func.ma_perc = value
     return html.Div([
                 html.H5("test"),                
@@ -433,8 +431,6 @@ def update_ma(value):
 @app.callback(Output('hidden-div4', 'children'),
             [Input('my-slider3', 'value')])
 def update_area(value):
-    global area_perc
-    area_perc = value
     find_matches_func.area_perc = value
     return html.Div([
                 html.H5("test"),                
@@ -443,8 +439,6 @@ def update_area(value):
 @app.callback(Output('hidden-div5', 'children'),
             [Input('my-slider4', 'value')])
 def update_aspect(value):
-    global aspect_perc
-    aspect_perc = value
     find_matches_func.aspect_perc = value
     return html.Div([
                 html.H5("test"),                
@@ -453,8 +447,6 @@ def update_aspect(value):
 @app.callback(Output('hidden-div6', 'children'),
             [Input('my-slider5', 'value')])
 def update_locationX(value):
-    global locX_perc
-    locX_perc = value
     find_matches_func.locX_perc = value
     return html.Div([
                 html.H5("test"),                
@@ -496,7 +488,7 @@ def sum_slider(value,value1,value2,value3,value4,value5,value6):
              Output('my-slider6', 'value')],
              [Input('update_the_weights', 'n_clicks')])
 def updateSliders(value):
-    new,new1,new2,new3,new4,new5,new6 = readjust([orientation_perc,MA_perc,ma_perc,area_perc,aspect_perc,locX_perc,locY_perc])
+    new,new1,new2,new3,new4,new5,new6 = readjust([find_matches_func.orien_perc,find_matches_func.MA_perc,find_matches_func.ma_perc,find_matches_func.area_perc,find_matches_func.aspect_perc,find_matches_func.locX_perc,find_matches_func.locY_perc])
     return new,new1,new2,new3,new4,new5,new6
 
 @app.callback(
@@ -520,5 +512,5 @@ def tail_mute_filter(value):
 
 if __name__ == '__main__':
     app.run_server()
-    
+        
     
