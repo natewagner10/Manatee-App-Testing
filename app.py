@@ -29,7 +29,7 @@ from Documents.Mote_Marine_Manatees.app3.helpers import readjust, getFilePaths
 #  Needed paths
 ############################################################
 path_to_images = '/Users/natewagner/Documents/Mote_Manatee_Project/data/data_folders/'
-path_to_mask = '/Users/natewagner/Downloads/MANATEE_MASK.png'
+path_to_mask = '/Users/natewagner/Documents/Mote_Manatee_Project/data/MANATEE_MASK.png'
 path_to_blank = '/Users/natewagner/Documents/Mote_Manatee_Project/data/BLANK_SKETCH_updated.jpg'
 path_to_cnn = '/Users/natewagner/Documents/Mote_Manatee_Project/data/assets/tail_mute_cnn_15_epochs_99.pt'
 path_to_tail_mute_info = '/Users/natewagner/Documents/Mote_Manatee_Project/data/tail_mute_info.csv'
@@ -514,4 +514,4 @@ def update_output(value):
 if __name__ == '__main__':
     app.run_server()
     
-    
+        
