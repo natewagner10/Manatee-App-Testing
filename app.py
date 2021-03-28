@@ -11,6 +11,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
+import dash_daq as daq
 import base64
 import json
 import numpy as np
@@ -27,9 +28,9 @@ from Documents.Mote_Marine_Manatees.app3.helpers import readjust, getFilePaths
 ############################################################
 #  Needed paths
 ############################################################
-
+#path_to_mask = '/Users/natewagner/Documents/Mote_Manatee_Project/data/MANATEE_MASK.png'
 path_to_images = '/Users/natewagner/Documents/Mote_Manatee_Project/data/data_folders/'
-path_to_mask = '/Users/natewagner/Documents/Mote_Manatee_Project/data/MANATEE_MASK.png'
+path_to_mask = '/Users/natewagner/Downloads/MANATEE_MASK.png'
 path_to_blank = '/Users/natewagner/Documents/Mote_Manatee_Project/data/BLANK_SKETCH_updated.jpg'
 path_to_cnn = '/Users/natewagner/Documents/Mote_Manatee_Project/data/assets/tail_mute_cnn_15_epochs_99.pt'
 path_to_tail_mute_info = '/Users/natewagner/Documents/Mote_Manatee_Project/data/tail_mute_info.csv'
@@ -42,7 +43,7 @@ path_to_template = '/Users/natewagner/Documents/Mote_Manatee_Project/data/BLANK_
 model = CNN()
 model.load_state_dict(torch.load(path_to_cnn, map_location=torch.device('cpu')))
     
-find_matches_func = Compare_ROIS(None, path_to_template, path_to_tail_mute_info, None, None, path_to_mask, 1, 1, 1, 1, 1, 1, 1, 1, 3, "unkown", model)
+find_matches_func = Compare_ROIS(None, path_to_template, path_to_tail_mute_info, None, None, path_to_mask, 0.20, 0.30, 0.30, 0.20, 1, 3, "unknown", model, None, "shape", None)
 
 find_matches_func.paths, find_matches_func.all_tail_info = getFilePaths(path_to_images, path_to_tail_mute_info)
 find_matches_func.preLoadData()
@@ -61,234 +62,130 @@ canvas_height = 559
 
 app.layout = html.Div(
     [
-     dbc.NavbarSimple(
-        brand="Manatee Matching Application",
-        color="primary",
-        expand = 'md',
-        dark=True,
-    ),
-     html.Br(),
-     dbc.Row(
-         [
-             dbc.Col(
-                 dbc.Card(
-                    [
-                       html.H6(id="orientation", children=['Orientation'], style={'textAlign': 'center', 'font-weight': 'normal'}),                    
-                       dcc.Slider(
-                           id='my-slider',
-                           min=0,
-                           max=2,
-                           step=0.10,
-                           value=1,
-                           marks={
-                               0: {'label': '0'},
-                               1: {'label': '1'},                                                                
-                               2: {'label': '2'}
-                           }
-                       ),
-                dbc.Tooltip("Useful for tilted scars or scars with some sense of orientation.",target="orientation"),                       
-                       html.Div(id='hidden-div', style={'display':'none'}),
-                       html.H6(id="length", children=['Length'], style={'textAlign': 'center', 'font-weight': 'normal'}),                                                                        
-                       dcc.Slider(
-                           id='my-slider1',
-                           min=0,
-                           max=2,
-                           step=0.10,
-                           value=1,
-                           marks={
-                               0: {'label': '0'},
-                               1: {'label': '1'},                                                                
-                               2: {'label': '2'}
-                           }
-                       ),
-                dbc.Tooltip("Length of the scar (with respect to the ellipse fitted to the scar).",target="length"),                              
-                       html.Div(id='hidden-div2', style={'display':'none'}),                                                    
-                       html.H6(id="width", children=['Width'], style={'textAlign': 'center', 'font-weight': 'normal'}),                                                                        
-                       dcc.Slider(
-                           id='my-slider2',
-                           min=0,
-                           max=2,
-                           step=0.10,
-                           value=1,
-                           marks={
-                               0: {'label': '0'},
-                               1: {'label': '1'},                                                                
-                               2: {'label': '2'}
-                           }
-                       ),  
-                dbc.Tooltip("Width of the scar (with respect to the ellipse fitted to the scar).",target="width"),                       
-                       html.Div(id='hidden-div3', style={'display':'none'}),                                                    
-                       html.H6(id="area", children=['Area'], style={'textAlign': 'center', 'font-weight': 'normal'}),                                                                        
-                       dcc.Slider(
-                           id='my-slider3',
-                           min=0,
-                           max=2,
-                           step=0.10,
-                           value=1,
-                           marks={
-                               0: {'label': '0'},
-                               1: {'label': '1'},                                                                
-                               2: {'label': '2'}
-                           }
-                       ), 
-                dbc.Tooltip("Area of the scar (size of scar). Increasing this will add additional penalties to scars having a greater area than the drawn scar. ",target="area"),                                              
-                       html.Div(id='hidden-div4', style={'display':'none'}),                                                    
-                       html.H6(id="aspect", children=['Aspect Ratio'], style={'textAlign': 'center', 'font-weight': 'normal'}),                                                                        
-                       dcc.Slider(
-                           id='my-slider4',
-                           min=0,
-                           max=2,
-                           step=0.10,
-                           value=1,
-                           marks={
-                               0: {'label': '0'},
-                               1: {'label': '1'},                                                                
-                               2: {'label': '2'}
-                           }
-                       ),   
-                dbc.Tooltip("Ratio of width to height of rectangle fitted to scar. Increasing this will penalize scars that don’t have similar width-to-height ratios. ",target="aspect"),                       
-                       html.Div(id='hidden-div5', style={'display':'none'}), 
-                       html.H6(id="locationx", children=['Location X'], style={'textAlign': 'center', 'font-weight': 'normal'}),                                                                        
-                       dcc.Slider(
-                           id='my-slider5',
-                           min=0,
-                           max=2,
-                           step=0.10,
-                           value=1,
-                           marks={
-                               0: {'label': '0'},
-                               1: {'label': '1'},                                                                
-                               2: {'label': '2'}
-                           }
-                       ),   
-                dbc.Tooltip("Scar Location (x-direction): horizontal axis location with respect to the whole sketch. Increasing this will add additional penalties to scars being further away from the drawn scar.",target="locationx"),                                              
-                       html.Div(id='hidden-div6', style={'display':'none'}), 
-                       html.H6(id="locationy", children=['Location Y'], style={'textAlign': 'center', 'font-weight': 'normal'}),                                                                        
-                       dcc.Slider(
-                           id='my-slider6',
-                           min=0,
-                           max=2,
-                           step=0.10,
-                           value=1,
-                           marks={
-                               0: {'label': '0'},
-                               1: {'label': '1'},                                                                
-                               2: {'label': '2'}
-                           }
-                       ),
-                dbc.Tooltip("Scar Location (y-direction): horizontal axis location with respect to the whole sketch. Increasing this will add additional penalties to scars being further away from the drawn scar.",target="locationy"),                                                                     
-                html.Div(id='hidden-div8', style={'display':'none'}),                       
-                    #html.Hr(),
-                    html.Div([
-                        dcc.RadioItems(
-                            id="tail_filter",
-                             options=[
-                                 {'label': 'Tail Mute', 'value': 'mute'},
-                                 {'label': 'No Mute', 'value': 'no_mute'},
-                                 {'label': 'Unkown', 'value': 'unkown'},
-                             ],
-                             value='unkown', 
-                             inputStyle={"margin-right": "10px", "margin-left": "10px"},
-                         )
-                                       ],style = {'align-items': 'center', 'margin-left': '10%'}),                        
-                       html.Div(id='hidden-div13', style={'display':'none'}), 
-                       dbc.Button(id="update_the_weights", children="Update Weights", color="primary", style = {'width': '76%', 'margin-left': '12.5%'}),
-                       html.Span(id="slider-sum", style={"vertical-align": "middle"}),
-                       html.Div(
-                           [
-                            html.H6(children=['Number of Scars in Match:'], style={'textAlign': 'center', 'font-weight': 'normal'}),
-                            dcc.RangeSlider(
-                                    id='my-range-slider',
-                                    min=0,
-                                    max=10,
-                                    step=1,
-                                    marks={
-                                        0: '0',
-                                        1: '1',
-                                        2: '2',
-                                        3: '3',
-                                        4: '4',
-                                        5: '5',
-                                        6: '6',
-                                        7: '7',
-                                        8: '8',
-                                        9: '9',
-                                        10: '10',                                        
-                                    },
-                                    value=[1, 3]
-                                ),
-                           html.Div(id='hidden-div12', style={'display':'none'}),                       
-                           html.H6(children=['Brush Width'], style={'textAlign': 'center', 'font-weight': 'normal'}),
-                               dcc.Slider(
-                                   id='bg-width-slider',
-                                   min=1,
-                                   max=40,
-                                   step=1,
-                                   value=1,
-                               ),
-                           html.A(dbc.Button('Refresh',color="primary", style = {'width': '76%', 'margin-left': '12.5%', 'margin-bottom': '5px'}),href='/')                                       
-                               ],
-                           style = {"margin-top": "10px"}),                                                   
-                       ],
-                    style = {'width': '100%',
-                             'margin-top': '5px',
-                             'margin-right': '100px',
-                             'display': 'inline-block',                                      
-                             'box-shadow': '0 0 10px lightgrey'}
-                    ),md = 2),
-             dbc.Col(
-                 dbc.Card(
-                     [
-                     dbc.CardHeader(
-                     html.H4("Sketch", className="card-text"), style={"width": "100%", 'textAlign': 'center'}
-                     ),
-                        html.Div(
-                            [                                       
-                                DashCanvas(
-                                    id='canvas',
-                                    width=canvas_width,
-                                    height=canvas_height,
-                                    filename=filename,
-                                    lineColor='black',
-                                    hide_buttons=['line', 'select', 'zoom', 'pan'],
-                                    goButtonTitle="Search"                                    
-                                    ),                                                            
-                            ], style = {'margin-left': '25%',
-                                        'margin-top': '7px'}
-                            ),   
-                                            
-                    ],
-                    style = {#'textAlign': 'center',
-                             'width': '100%',
-                             #'height': '110%',
-                             'display': 'inline-block',
-                             'box-shadow': '0 0 10px lightgrey'}
-                    ),
-                    md = 4),               
-             dbc.Col(
-                 dbc.Card(
-                     [
-                         dbc.CardHeader(
-                         html.H4("Browse Matches", className="card-text", style = {'textAlign': 'center'}), style={"width": "100%"}
-                         ),
-                          html.Span(id="sketch_output", style={"vertical-align": "middle"}),
-                          dbc.CardFooter(
-                              dbc.Row(
-                                  [
-                                      dbc.Col(html.Div(id = 'sketch_output_info1'), md = 12),
-                                  ]
-                                  )
-                              )                                 
-                     ],
-                     style={'width': '100%',
-                            #'height': '',                            
-                            'align-items': 'center',
-                            'display': 'inline-block',
-                            'box-shadow': '0 0 10px lightgrey'}
-                     ),
-                     md = 6),
+    html.Br(),
+    dbc.Row(
+        [
+            dbc.Col(
+                html.H2(className="title", children="Manatee Matching Application")
+            ),
+            dbc.Col(
+                dbc.Button(id="how-to-use", children="How To Use", color="primary", outline=True, style = {'margin-left': '80%'}),
+            ),
         ]
-        ),
+    ),
+    html.Br(),
+    dbc.Row(
+        [    
+            dbc.Col(
+                [
+                    html.Div(
+                        [   
+                            html.Div(
+                                [
+                                    html.Div(id='search-mode-out'),
+                                        daq.ToggleSwitch(
+                                            id='search-mode',
+                                            value=False,
+                                            size=50
+                                        ),
+                                ],
+                                style = {'width': '100%',
+                                         'margin-top': '5px',
+                                         'margin-right': '100px',
+#                                         'box-shadow': '0 0 10px lightgrey',
+                                         'display': 'inline-block'}                                
+                            ), 
+                            html.Span(id="s-mode", style={"vertical-align": "middle"}),
+                            html.Div(
+                                [
+                                    html.Div(
+                                        [
+                                            html.Hr(),
+                                            dcc.RadioItems(
+                                                id="tail_filter",
+                                                options=[
+                                                    {'label': 'Tail Mute', 'value': 'mute'},
+                                                    {'label': 'No Mute', 'value': 'no_mute'},
+                                                    {'label': 'Unkown', 'value': 'unkown'},
+                                                ],
+                                                value='unkown', 
+                                                inputStyle={"margin-right": "10px", "margin-left": "10px"},
+                                                )
+                                        ],
+                                        style = {'align-items': 'center', 'margin-left': '10%'}
+                                    ),                                       
+                                    html.Div(id='hidden-div12', style={'display':'none'}),                       
+                                    html.H6(children=['Brush Width'], style={'textAlign': 'center', 'font-weight': 'normal'}),
+                                    dcc.Slider(
+                                        id='bg-width-slider',
+                                        min=1,
+                                        max=40,
+                                        step=1,
+                                        value=1,
+                                    ),                                               
+                                ],
+                                style = {"margin-top": "10px"}),                                                   
+                        ],
+                        style = {'width': '100%',
+                                 'margin-top': '5px',
+                                 'margin-right': '100px',
+                                 'display': 'inline-block'}
+                    )
+                ], 
+                md = 2
+            ),
+            dbc.Col(
+                [                
+                    html.Div(
+                        [
+                            html.Div(
+                                [                                       
+                                    DashCanvas(
+                                        id='canvas',
+                                        width=canvas_width,
+                                        height=canvas_height,
+                                        filename=filename,
+                                        lineColor='black',
+                                        hide_buttons=['line', 'select', 'zoom', 'pan'],
+                                        goButtonTitle="Search"                                    
+                                    ),                                                            
+                                ],
+                                style = {'margin-left': '25%',
+                                         'margin-top': '7px'}
+                            ),
+                            html.A(dbc.Button('Refresh',color="primary", outline=True, style = {'width': '50%', 'margin-left': '27%', 'margin-top': '3px'}),href='/')                            
+                                            
+                        ],
+                        style = {'width': '100%',
+                                 'height': '675px',
+                                 'display': 'inline-block',
+                                 'box-shadow': '0 0 10px lightgrey'}
+                    ),
+                    html.H5("Scar Statistics: ", style={'margin-left': '10px',
+                                                        'margin-top': '10px'}),
+                    html.Div(id="scar_statistic_df"),
+                ],
+                md = 4
+            ),               
+            dbc.Col(
+                [
+                    html.Div(
+                        [
+                            html.Span(id="sketch_output", style={"vertical-align": "middle"}),                              
+                        ],
+                        style={'width': '100%',                       
+                               'align-items': 'center',
+                               'display': 'inline-block',
+                               'box-shadow': '0 0 10px lightgrey',
+                               'height': '675px'}
+                    ),
+                    html.Div(id = 'sketch_output_info1', style={'margin-left': '10px',
+                                                                'margin-top': '10px'})
+                ],
+                md = 6
+            ),
+        ]    
+    ),
     ],
     style={'padding': '0px 40px 0px 40px', 'height': '100%'}
 )
@@ -299,7 +196,8 @@ app.layout = html.Div(
 ############################################################                                                                                
                                         
 @app.callback([Output('sketch_output', 'children'),
-               Output('sketch_output_info1', 'children')],
+               Output('sketch_output_info1', 'children'),
+               Output('scar_statistic_df', 'children')],
                 [Input('canvas', 'json_data'),
                  Input('canvas', 'n_clicks')],
                 )
@@ -346,50 +244,91 @@ def update_data(string,image):
         if 'find_matches_func' in globals():
             find_matches_func.input_sketch = mask
             find_matches_func.roi = bounding_box_list
-        matches = find_matches_func.compare_rois()
+        matches = find_matches_func.compare_rois()        
         is_rect = False 
         images_url = []
         names_df = []
+        mean_df = []
+        sum_df = []
+        min_df = []
+        orien_df = []
+        MA_df = []
+        ma_df = []
+        aspect_df = []      
         for entry in matches:
             names_df.append(entry[1][0:-4])
             needed_im = '![myImage-' + str(entry[0]) + '](assets/' + str(find_matches_func.getImagePath(entry[1])) + ')'            
             images_url.append(needed_im)
-            
-        data_tups = list(zip(names_df,images_url))
-        data_table_df = pd.DataFrame(data_tups, columns=['Name','Image'])
+            mean_df.append(round(entry[2],2))
+            sum_df.append(round(entry[3],2))
+            min_df.append(round(entry[4],2))
+            orien_df.append(round(entry[5],2))
+            MA_df.append(round(entry[6],2))
+            ma_df.append(round(entry[7],2))
+            aspect_df.append(round(entry[8],2))            
+
+        scar_num = []
+        orientation_i = []
+        length_i = []
+        width_i = []
+        aspect_i = []        
+        if find_matches_func.search_mode == 'shape':
+            if len(find_matches_func.scar_i) > 1: 
+                for num, info in enumerate(find_matches_func.scar_i):
+                    scar_num.append(num+1)
+                    orientation_i.append(round(info[3][0][2], 2))
+                    length_i.append(round(info[3][0][3][0], 2))
+                    width_i.append(round(info[3][0][3][1], 2))    
+                    aspect_i.append(round(info[3][0][5], 2))
+            else:
+                for num, info in enumerate(find_matches_func.scar_i[0][3]):
+                    scar_num.append(num+1)
+                    orientation_i.append(round(info[2], 2))
+                    length_i.append(round(info[3][0], 2))
+                    width_i.append(round(info[3][1], 2))    
+                    aspect_i.append(round(info[5], 2))   
+        scar_i_tups = list(zip(scar_num,orientation_i,length_i,width_i,aspect_i))
+        scar_i_data_table_df = pd.DataFrame(scar_i_tups, columns=['Scar Number','Orientation','Length','Width','Aspect Ratio']) 
+
+        data_tups = list(zip(names_df,images_url,mean_df,sum_df,min_df,orien_df,MA_df,ma_df,aspect_df))
+        data_table_df = pd.DataFrame(data_tups, columns=['Name','Image','Mean','Sum','Min','O','L','W','A'])      
         #if data_table_df is not None:
         return html.Div(
-                       [                           
-                           dash_table.DataTable(
-                              id='table',
-                              columns=[{"name": 'Name', "id": 'Name'},
-                                  {
-                                    'id': 'Image',
-                                    'name': 'Image',
-                                    'presentation': 'markdown',
-                                  },
-                              ],
-                              page_size=50,
-                              data=data_table_df.to_dict('records'),
-                              style_table={'height': '575px', 'overflowY': 'auto'},
-                              style_cell={'textAlign': 'center', 'font_size': '26px'},
-                              style_header = {'display': 'none'},
-                              style_as_list_view=True,
-                              css=[
-                                      {
-                                         'selector': 'tr:first-child',
-                                         'rule': 'display: none',
-                                      },
-                                    ],
-                          ),  
-                       ],
-                       style = {'textAlign': 'center',
-                                'width': '100%',
-                                'align-items': 'center',
-                                }), html.H5("Number of Matches: " + str(len(names_df)))
+                   [                           
+                       dash_table.DataTable(
+                           id='table',
+                           columns=[{'id': 'Name', 'name': 'Name'}, {'id': 'Image', 'name': 'Image', 'presentation': 'markdown'}, {'id': 'Mean', 'name': 'Mean'}, {'id': 'Sum', 'name': 'Sum'}, {'id': 'Min', 'name': 'Min'}, {'id': 'O', 'name': 'O'}, {'id': 'L', 'name': 'L'}, {'id': 'W', 'name': 'W'}, {'id': 'A', 'name': 'A'}],
+                           page_size=50,
+                           #style_as_list_view=True,
+                           style_header={'height':'auto'},
+                           data=data_table_df.to_dict('records'),
+                           style_table={'overflowX': 'auto', 'minHeight': '625px', 'height': '625px', 'maxHeight': '625px', 'overflowY': 'auto'},
+                           style_cell={'textAlign': 'center', 'font_size': '20px','overflowX': 'auto', 'height': 'auto'},
+                           sort_action="native",
+                           fixed_rows={'headers': True},                           
+                       ),  
+                   ],
+                   style = {'textAlign': 'center',
+                            'width': '100%',
+                            'align-items': 'center'}), html.H5("Number of Matches: " + str(len(names_df))), html.Div(
+                   [                           
+                       dash_table.DataTable(
+                           id='table1',
+                           columns=[{'id': 'Scar Number', 'name': 'Scar'}, {'id': 'Orientation', 'name': 'Orien'}, {'id': 'Length', 'name': 'Len'}, {'id': 'Width', 'name': 'Wid'}, {'id': 'Aspect Ratio', 'name': 'Aspect'}],                           
+                           data=scar_i_data_table_df.to_dict('records'),
+                           style_header={'overflowY': 'auto', 'minWidth': '10px', 'width': '10px', 'maxWidth': '10px', 'backgroundColor': 'white'},
+                           style_cell={'textAlign': 'center', 'font_size': '15px', 'height':'auto', 'minWidth': '10px', 'width': '10px', 'maxWidth': '10px'},
+                           fixed_rows={'headers': True},
+                           style_as_list_view=True,
+                       ),  
+                   ],
+                   style = {'textAlign': 'center',
+                            'width': '100%',
+                            'align-items': 'center',
+                            'margin-bottom': '15px'})
     return html.Div([
     html.Img(src='data:image/png;base64,{}'.format(blank.decode()))
-    ], style = {'align-items': 'center','margin-left':'35%'}), html.H5("Number of Matches: ")
+    ], style = {'align-items': 'center','margin-left':'35%', 'margin-top': '5%'}), html.H5("Number of Matches: "), html.Div(id='hidden-div200', style={'display':'none'})
 
 @app.callback(Output('canvas', 'lineColor'),
             [Input('color-picker', 'value')])
@@ -428,71 +367,29 @@ def update_ma(value):
                 html.H5("test"),                
                 ], style = {'align-items': 'center'})
 
-@app.callback(Output('hidden-div4', 'children'),
-            [Input('my-slider3', 'value')])
-def update_area(value):
-    find_matches_func.area_perc = value
-    return html.Div([
-                html.H5("test"),                
-                ], style = {'align-items': 'center'})
-
 @app.callback(Output('hidden-div5', 'children'),
-            [Input('my-slider4', 'value')])
+            [Input('my-slider3', 'value')])
 def update_aspect(value):
     find_matches_func.aspect_perc = value
     return html.Div([
                 html.H5("test"),                
                 ], style = {'align-items': 'center'})
 
-@app.callback(Output('hidden-div6', 'children'),
-            [Input('my-slider5', 'value')])
-def update_locationX(value):
-    find_matches_func.locX_perc = value
-    return html.Div([
-                html.H5("test"),                
-                ], style = {'align-items': 'center'})
-
-@app.callback(Output('hidden-div7', 'children'),
-            [Input('my-slider6', 'value')])
-def update_locationY(value):
-    global locY_perc
-    locY_perc = value
-    find_matches_func.locY_perc = value
-    return html.Div([
-                html.H5("test"),                
-                ], style = {'align-items': 'center'})
-
-
-@app.callback(Output('slider-sum', 'children'),
-            [Input('my-slider', 'value'),
-             Input('my-slider1', 'value'),
-             Input('my-slider2', 'value'),
-             Input('my-slider3', 'value'),
-             Input('my-slider4', 'value'),
-             Input('my-slider5', 'value'),
-             Input('my-slider6', 'value')])
-def sum_slider(value,value1,value2,value3,value4,value5,value6):
-    summ = round((value+value1+value2+value3+value4+value5+value6),2) 
-    return html.Div([
-                #html.Hr(),
-                html.H6(children=['Weights Sum: ' + str(summ)], style={'textAlign': 'center', 'font-weight': 'normal', 'margin-top':'10px'}),                                                                        
-                html.Hr(),                
-                ], style = {'align-items': 'center'})
-
 @app.callback([Output('my-slider', 'value'),
-             Output('my-slider1', 'value'),
-             Output('my-slider2', 'value'),
-             Output('my-slider3', 'value'),
-             Output('my-slider4', 'value'),
-             Output('my-slider5', 'value'),
-             Output('my-slider6', 'value')],
-             [Input('update_the_weights', 'n_clicks')])
+               Output('my-slider1', 'value'),
+               Output('my-slider2', 'value'),
+               Output('my-slider3', 'value')],
+              [Input('update_the_weights', 'n_clicks')])
 def updateSliders(value):
-    new,new1,new2,new3,new4,new5,new6 = readjust([find_matches_func.orien_perc,find_matches_func.MA_perc,find_matches_func.ma_perc,find_matches_func.area_perc,find_matches_func.aspect_perc,find_matches_func.locX_perc,find_matches_func.locY_perc])
-    return new,new1,new2,new3,new4,new5,new6
+    if value is not None and value > 0:
+        new,new1,new2,new3 = readjust([find_matches_func.orien_perc,find_matches_func.MA_perc,find_matches_func.ma_perc,find_matches_func.aspect_perc])
+        return new,new1,new2,new3
+    else:
+        new,new1,new2,new3 = [find_matches_func.orien_perc,find_matches_func.MA_perc,find_matches_func.ma_perc,find_matches_func.aspect_perc]
+        return new,new1,new2,new3 
 
 @app.callback(
-    Output('hidden-div12', 'children'),
+    Output('hidden-div12', 'children'), 
     [Input('my-range-slider', 'value'),])
 def update_range_slider(value):
     find_matches_func.low_end = value[0]
@@ -510,7 +407,111 @@ def tail_mute_filter(value):
                 html.H5("test"),                
                 ], style = {'align-items': 'center'}) 
 
+@app.callback([Output('search-mode-out', 'children'),
+               Output('s-mode', 'children')],
+              [Input('search-mode', 'value')])
+def update_output(value):
+    if value is False:
+        mode = 'Contour Mode'
+        find_matches_func.search_mode = 'shape'
+        return 'Search Mode: {}'.format(mode), html.Div(
+                                [
+                                    html.Hr(),
+                                    html.H6(id="orientation", children=['Orientation'], style={'textAlign': 'center', 'font-weight': 'normal'}),                    
+                                    dcc.Slider(
+                                        id='my-slider',
+                                        min=0,
+                                        max=2,
+                                        step=0.10,
+                                        value=0.20,
+                                        marks={
+                                            0: {'label': '0'},
+                                            1: {'label': '1'},                                                                
+                                            2: {'label': '2'}
+                                        }
+                                    ),
+                                    dbc.Tooltip("Useful for tilted scars or scars with some sense of orientation.",target="orientation"),                       
+                                    html.Div(id='hidden-div', style={'display':'none'}),
+                                    html.H6(id="length", children=['Length'], style={'textAlign': 'center', 'font-weight': 'normal'}),                                                                        
+                                    dcc.Slider(
+                                        id='my-slider1',
+                                        min=0,
+                                        max=2,
+                                        step=0.10,
+                                        value=0.30,
+                                        marks={
+                                            0: {'label': '0'},
+                                            1: {'label': '1'},                                                                
+                                            2: {'label': '2'}
+                                        }
+                                    ),
+                                    dbc.Tooltip("Length of the scar (with respect to the ellipse fitted to the scar).",target="length"),                              
+                                    html.Div(id='hidden-div2', style={'display':'none'}),                                                    
+                                    html.H6(id="width", children=['Width'], style={'textAlign': 'center', 'font-weight': 'normal'}),                                                                        
+                                    dcc.Slider(
+                                        id='my-slider2',
+                                        min=0,
+                                        max=2,
+                                        step=0.10,
+                                        value=0.30,
+                                        marks={
+                                            0: {'label': '0'},
+                                            1: {'label': '1'},                                                                
+                                            2: {'label': '2'}
+                                        }
+                                    ),  
+                                    dbc.Tooltip("Width of the scar (with respect to the ellipse fitted to the scar).",target="width"),                                                           
+                                    html.Div(id='hidden-div4', style={'display':'none'}),                                                    
+                                    html.H6(id="aspect", children=['Aspect Ratio'], style={'textAlign': 'center', 'font-weight': 'normal'}),                                                                        
+                                    dcc.Slider(
+                                        id='my-slider3',
+                                        min=0,
+                                        max=2,
+                                        step=0.10,
+                                        value=0.20,
+                                        marks={
+                                            0: {'label': '0'},
+                                            1: {'label': '1'},                                                                
+                                            2: {'label': '2'}
+                                        }
+                                    ),   
+                                    dbc.Tooltip("Ratio of width to height of rectangle fitted to scar. Increasing this will penalize scars that don’t have similar width-to-height ratios. ",target="aspect"),                       
+                                    html.Div(id='hidden-div5', style={'display':'none'}),       
+                                    html.Div(id='hidden-div8', style={'display':'none'}),                                                             
+                                    html.Div(id='hidden-div13', style={'display':'none'}), 
+                                    dbc.Button(id="update_the_weights", children="Update Weights", color="primary", outline=True, style = {'width': '76%', 'margin-left': '12.5%', 'margin-bottom': '5px'}),
+                                    html.H6(children=['Number of Scars in Match:'], style={'textAlign': 'center', 'font-weight': 'normal'}),
+                                    dcc.RangeSlider(
+                                        id='my-range-slider',
+                                        min=0,
+                                        max=10,
+                                        step=1,
+                                        marks={
+                                            0: '0',
+                                            1: '1',
+                                            2: '2',
+                                            3: '3',
+                                            4: '4',
+                                            5: '5',
+                                            6: '6',
+                                            7: '7',
+                                            8: '8',
+                                            9: '9',
+                                            10: '10',                                        
+                                        },
+                                        value=[1, 3]
+                                    ),                                      
+                                ],
+                                style = {'width': '100%',
+                                         'margin-top': '5px',
+                                         'margin-right': '100px',
+                                         'display': 'inline-block'}                                 
+                            ),
+    else:
+        mode = 'Pixel Mode'
+        find_matches_func.search_mode = 'dist'
+        return 'Search Mode: {}'.format(mode), html.Div(id='hidden-div20', style={'display':'none'})
+
 if __name__ == '__main__':
     app.run_server()
-        
     
