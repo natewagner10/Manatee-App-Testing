@@ -16,8 +16,15 @@ pip install -r requirements.txt
 ```sh
 python app.py
 ```
-## 2. Usage
+## 2. Examples
 
+![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/manateeAI_search_example.png)
+
+![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/manateeAI_series_example.png)
+
+![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/manateeAI_data_explorer.png)
+
+![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/manateeAI_annotate_example.png)
 
 ## Contributors
 Nate Wagner <br />
