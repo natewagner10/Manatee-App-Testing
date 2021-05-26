@@ -1,4 +1,4 @@
-# Manatee Matching Application
+# Manatee Retrieval Application
 
 ![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/manateeAI_Page1.png)
 
