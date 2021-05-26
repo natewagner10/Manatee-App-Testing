@@ -59,12 +59,21 @@ class Compare_ROIS(object):
             n_scars.append(ob['classTitle'])                       
         self.scar_i = [orientation, length, width, aspect, n_scars]
         # iterate through each box
+        dont_include = []
+        num_empty_boxes = 0
         for b in range(len(self.roi)):
             box = self.roi[b]
             x,y,w,h = box
             poly_box = Polygon(np.array([[x,y], [x+w, y], [x+w, y+h], [x, y+h]]))
-            # iterate through each image JSON
-            for im in self.processed_images:
+            is_empty = True
+            for scar in self.input_annots['objects']:
+                ps = Polygon(scar['points']['exterior'])
+                if ps.intersects(poly_box):
+                    is_empty = False 
+            if is_empty == True:
+                num_empty_boxes += 1
+            # iterate through each image JSON            
+            for im in self.processed_images:                
                 sketch_info = self.processed_images[im]  
 
                 mute_index = [[0], [1], [0,1]]
@@ -74,12 +83,14 @@ class Compare_ROIS(object):
                     holder = 1
                 if self.tail == 'no_mute':
                     holder = 0                
-
                 if sketch_info['num_scars'] in range(self.low_end, self.high_end+1) and sketch_info['has_mute'] in mute_index[holder]:
                     in_box = []
-                    for i in range(0,len(sketch_info['objects'])):                        
+                    for i in range(0,len(sketch_info['objects'])):                                                                         
                         poly = sketch_info['objects'][i]['points']['exterior']  
                         poly_obj = Polygon(poly)
+                        if is_empty == True:
+                            if poly_obj.intersects(poly_box):
+                                dont_include.append(im)                                                
                         if self.in_roi == False:
                             if poly_obj.intersects(poly_box):
                                 in_box.append(sketch_info['objects'][i]['id'])
@@ -96,8 +107,10 @@ class Compare_ROIS(object):
                                 input_series_stats = self.computeSeriesStats(self.input_annots['objects'], in_box, True)
                                 dist = self.getDistance(sketch_info['objects'], in_box, self.input_annots['objects'], im, True, [our_series_stats, input_series_stats]) 
                             if dist != 'NA':
-                                scores.append(dist) 
-        our_scar_df = self.buildDataFrame(scores)                           
+                                scores.append(dist)         
+        scores1 = [i for i in scores if i[0] not in dont_include]
+        self.check = scores1
+        our_scar_df = self.buildDataFrame(scores1, num_empty_boxes)                           
         return our_scar_df                                                    
     def getDistance(self, our_object, in_box, input_objects, name, series, series_info):
         final_scores = []
@@ -170,12 +183,12 @@ class Compare_ROIS(object):
             return [name, np.mean(distances), np.sum(distances), np.min(distances), distances_info[0], distances_info[1], distances_info[2], distances_info[3]]
         else:
             return 'NA'    
-    def buildDataFrame(self, df):
+    def buildDataFrame(self, df, num_empty_boxes):
         distance_dict_df = pd.DataFrame(df)        
         distance_dict_df.columns = ['Name', 'Mean', 'Sum', 'Min', 'Orien', 'MA', 'ma', 'aspect']
         unique_names_cnts = distance_dict_df.groupby('Name').agg({'Mean': np.nanmean, 'Sum': np.nansum, 'Min': np.nanmin, 'Name': 'count', 'Orien': np.nanmin, 'MA': np.nanmin, 'ma': np.nanmin, 'aspect': np.nanmin})
         unique_names_cnts['names'] = unique_names_cnts.index
-        has_all_scars = unique_names_cnts[unique_names_cnts['Name'] >= len(self.roi)]
+        has_all_scars = unique_names_cnts[unique_names_cnts['Name'] >= (len(self.roi) - num_empty_boxes)]
         has_all_scars.columns = ['mean', 'sum', 'min', 'count', 'Orien', 'MA', 'ma', 'aspect', 'name']
         returned = has_all_scars[['name', 'mean', 'sum', 'min', 'Orien', 'MA', 'ma', 'aspect']]        
         returned_list = returned.values.tolist()     
