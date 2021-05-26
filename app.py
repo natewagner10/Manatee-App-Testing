@@ -46,7 +46,7 @@ import dash_table
 path_to_images = '/Users/natewagner/Documents/Mote_Manatee_Project/data/data_folders/'
 path_to_blank = '/Users/natewagner/Documents/Mote_Manatee_Project/data/BLANK_SKETCH_updated.jpg'
 path_to_jsons = '/Users/natewagner/Documents/Mote_Manatee_Project/AI/predictions/predicted_annotations2/'
-path_to_ManateeAI = '/Users/natewagner/Documents/Mote_Marine_Manatees/app8/manateeAI_Scar_Finder.h5'
+path_to_ManateeAI = '/Users/natewagner/Documents/Mote_Marine_Manatees/app8/assets/manateeAI_Scar_Finder.h5'
 
 ############################################################
 #  Initiate model and Compare_ROIS class
