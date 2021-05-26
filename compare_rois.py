@@ -75,7 +75,6 @@ class Compare_ROIS(object):
             # iterate through each image JSON            
             for im in self.processed_images:                
                 sketch_info = self.processed_images[im]  
-
                 mute_index = [[0], [1], [0,1]]
                 if self.tail == 'unknown':
                     holder = 2
@@ -90,7 +89,8 @@ class Compare_ROIS(object):
                         poly_obj = Polygon(poly)
                         if is_empty == True:
                             if poly_obj.intersects(poly_box):
-                                dont_include.append(im)                                                
+                                dont_include.append(im)   
+                                break
                         if self.in_roi == False:
                             if poly_obj.intersects(poly_box):
                                 in_box.append(sketch_info['objects'][i]['id'])
