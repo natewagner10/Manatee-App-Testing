@@ -108,14 +108,14 @@ def buildDataTables(matches, find_matches_func):
     scar_i_tups = list(zip(scar_num,orientation_i,length_i,width_i,aspect_i))
     scar_i_data_table_df = pd.DataFrame(scar_i_tups, columns=['Scar Number','Orientation','Length','Width','Aspect Ratio']) 
 
-    data_tups = list(zip(names_df,images_url,mean_df,orien_df,MA_df,ma_df,aspect_df))
-    data_table_df = pd.DataFrame(data_tups, columns=['Name','Image','Mean','O','L','W','A'])  
+    data_tups = list(zip(names_df,images_url,mean_df))
+    data_table_df = pd.DataFrame(data_tups, columns=['Name','Image','Mean'])  
 
     browse_matches_table = html.Div(
                [                           
                    dash_table.DataTable(
                        id='table',
-                       columns=[{'id': 'Name', 'name': 'Name'}, {'id': 'Image', 'name': 'Image', 'presentation': 'markdown'}, {'id': 'Mean', 'name': 'Mean'}, {'id': 'O', 'name': 'O'}, {'id': 'L', 'name': 'L'}, {'id': 'W', 'name': 'W'}, {'id': 'A', 'name': 'A'}],
+                       columns=[{'id': 'Name', 'name': 'Name'}, {'id': 'Image', 'name': 'Image', 'presentation': 'markdown'}, {'id': 'Mean', 'name': 'Mean'}],
                        page_size=50,
                        style_header={'height':'auto'},
                        data=data_table_df.to_dict('records'),
@@ -123,12 +123,17 @@ def buildDataTables(matches, find_matches_func):
                        style_cell={'textAlign': 'center', 'font_size': '20px','overflowX': 'auto', 'height': 'auto'},
                        sort_action="native",
                        fixed_rows={'headers': True}, 
-                       filter_action="native",                       
+                       filter_action="native", 
+                       style_as_list_view=True,
                        style_cell_conditional=[
                             {
                                 'if': {'column_id': 'Image'},
                                 'width': '270px'
                             },                           
+                            {
+                                'if': {'column_id': 'Name'},
+                                'width': '270px'
+                            },                             
                         ],                          
                    ),  
                ],
