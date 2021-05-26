@@ -1,6 +1,6 @@
 # Manatee Matching Application
 
-![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/app_example.png)
+![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/manateeAI_Page1.png)
 
 ## 1. Setup
 
@@ -132,8 +132,8 @@ The user draws a scar, then puts a bounding box around the scar.  We then extrac
 <br />
 
 ## Contributors
-Rosa Gradilla <br />
 Nate Wagner <br />
+Rosa Gradilla <br />
 
 
 
