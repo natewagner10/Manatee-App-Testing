@@ -21,13 +21,16 @@ python app.py
 ![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/manateeAI_search_example.png)
 
 <br />
+<br />
 
 ![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/manateeAI_series_example.png)
 
 <br />
+<br />
 
 ![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/manateeAI_data_explorer.png)
 
+<br />
 <br />
 
 ![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/manateeAI_annotate_example.png)
