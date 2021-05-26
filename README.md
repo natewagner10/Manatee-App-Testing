@@ -1,6 +1,12 @@
+
 # Manatee Retrieval Application
 
-![alt text](https://github.com/natewagner10/Manatee-App-Testing/blob/main/assets/manateeAI_Page1.png)
+
+https://user-images.githubusercontent.com/54585457/119736290-7d5cf200-be4b-11eb-9043-870c907d6068.mov
+
+
+
+
 
 ## 1. Setup
 
